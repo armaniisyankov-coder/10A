@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Расписание 10А Инж</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-green: #34d399;
+      --accent-amber: #fbbf24;
+      --active-card: rgba(56, 189, 248, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 650px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    header {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 16px;
+      border: 1px solid var(--card-border);
+      text-align: center;
+      position: relative;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+
+    .clock-row {
+      font-size: 1.25rem;
+      color: var(--accent);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .date-row {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      text-transform: capitalize;
+    }
+
+    .sync-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 8px;
+      padding: 3px 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 999px;
+    }
+
+    .sync-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-amber);
+    }
+
+    .sync-dot.synced {
+      background: var(--accent-green);
+    }
+
+    /* Виджет активного статуса */
+    .status-widget {
+      background: linear-gradient(135deg, #1e293b 0%, #172554 100%);
+      padding: 18px 20px;
+      border-radius: 16px;
+      border: 1px solid #2563eb;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .status-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+    }
+
+    .status-badge.in-lesson { background: rgba(52, 211, 153, 0.2); color: var(--accent-green); }
+    .status-badge.break { background: rgba(251, 191, 36, 0.2); color: var(--accent-amber); }
+    .status-badge.off { background: rgba(148, 163, 184, 0.2); color: var(--text-muted); }
+
+    .status-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .status-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .countdown {
+      margin-top: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    /* Навигация по дням недели */
+    .days-nav {
+      display: flex;
+      gap: 6px;
+      background: var(--card-bg);
+      padding: 6px;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+    }
+
+    .day-btn {
+      flex: 1;
+      padding: 10px 0;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.95rem;
+    }
+
+    .day-btn.active {
+      background: var(--accent);
+      color: #090d16;
+      font-weight: 700;
+    }
+
+    /* Список уроков на выбранный день */
+    .lessons-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .lesson-item {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s ease;
+    }
+
+    .lesson-item.current {
+      border: 1px solid var(--accent-green);
+      background: rgba(52, 211, 153, 0.08);
+    }
+
+    .lesson-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .lesson-num {
+      width: 34px;
+      height: 34px;
+      background: #0f172a;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .lesson-item.current .lesson-num {
+      background: var(--accent-green);
+      color: #090d16;
+    }
+
+    .lesson-name {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .lesson-room {
+      font-size: 0.85rem;
+      color: var(--accent);
+    }
+
+    .lesson-time {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.3;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>10 «А» Инженерный</h1>
+    <div class="clock-row" id="clock">00:00:00</div>
+    <div class="date-row" id="dateStr">Загрузка даты...</div>
+    <div class="sync-indicator">
+      <span class="sync-dot" id="syncDot"></span>
+      <span id="syncStatus">Синхронизация с сервером Ташкента...</span>
+    </div>
+  </header>
+
+  <div class="status-widget">
+    <div class="status-badge off" id="statusBadge">Статус</div>
+    <div class="status-title" id="statusTitle">Определение текущего урока...</div>
+    <div class="status-desc" id="statusDesc"></div>
+    <div class="countdown" id="statusCountdown"></div>
+  </div>
+
+  <div class="days-nav" id="daysNav">
+    <button class="day-btn" data-day="1">Пн</button>
+    <button class="day-btn" data-day="2">Вт</button>
+    <button class="day-btn" data-day="3">Ср</button>
+    <button class="day-btn" data-day="4">Чт</button>
+    <button class="day-btn" data-day="5">Пт</button>
+  </div>
+
+  <div class="lessons-list" id="lessonsContainer"></div>
+</div>
+
+<script>
+  // 1. Сетка звонков
+  const bellSchedule = [
+    { num: 1, start: "09:15", end: "09:55" },
+    { num: 2, start: "10:10", end: "10:50" },
+    { num: 3, start: "11:05", end: "11:45" },
+    { num: 4, start: "12:00", end: "12:40" },
+    { num: 5, start: "13:05", end: "13:45" },
+    { num: 6, start: "14:10", end: "14:50" },
+    { num: 7, start: "15:00", end: "15:40" }
+  ];
+
+  // 2. Расписание 10 «А» с конкретизацией математики
+  const timetable = {
+    1: [
+      { num: 1, name: "История (Ист)", room: "каб. 101 (кинозал)" },
+      { num: 2, name: "ИВТ", room: "каб. IT A" },
+      { num: 3, name: "ШУ", room: "Конференц-зал" },
+      { num: 4, name: "Английский язык (Ая)", room: "каб. 108" },
+      { num: 5, name: "Узбекский язык (Уя)", room: "Конференц-зал" },
+      { num: 6, name: "Алгебра", room: "каб. 404" }
+    ],
+    2: [
+      { num: 1, name: "Геометрия", room: "каб. 404" },
+      { num: 2, name: "Тригонометрия", room: "каб. 404" },
+      { num: 3, name: "Физика (Физ)", room: "каб. 203" },
+      { num: 4, name: "Физика (Физ)", room: "каб. 203" },
+      { num: 5, name: "НДП", room: "каб. 303" },
+      { num: 6, name: "Русский яз. и лит. (РиЛ)", room: "каб. 104" }
+    ],
+    3: [
+      { num: 1, name: "Алгебра", room: "каб. 404" },
+      { num: 2, name: "ИВТ", room: "каб. IT A" },
+      { num: 3, name: "Узбекский язык (Уя)", room: "Конференц-зал" },
+      { num: 4, name: "Русский яз. и лит. (РиЛ)", room: "каб. 104" },
+      { num: 5, name: "Английский язык (Ая)", room: "каб. 108" },
+      { num: 6, name: "Проектная деятельн. (Пд)", room: "—" }
+    ],
+    4: [
+      { num: 1, name: "Русский яз. и лит. (РиЛ)", room: "каб. 104" },
+      { num: 2, name: "Физкультура (Ф-ра)", room: "Спортзал" },
+      { num: 3, name: "История (Ист)", room: "каб. 101 (кинозал)" },
+      { num: 4, name: "Проектная деятельн. (Пд)", room: "—" },
+      { num: 5, name: "Ораторское искусство", room: "Театр. студия" },
+      { num: 6, name: "Геометрия", room: "каб. 404" },
+      { num: 7, name: "Английский язык (Ая)", room: "каб. 108" }
+    ],
+    5: [
+      { num: 1, name: "Физика (Физ)", room: "каб. 203" },
+      { num: 2, name: "Физика (Физ)", room: "каб. 203" },
+      { num: 3, name: "Узбекский язык (Уя)", room: "Конференц-зал" },
+      { num: 4, name: "Английский язык (Ая)", room: "каб. 108" },
+      { num: 5, name: "Тригонометрия", room: "каб. 404" },
+      { num: 6, name: "ИВТ", room: "каб. IT A" }
+    ]
+  };
+
+  // 3. Синхронизация времени с эталоном (Ташкент UTC+5)
+  let serverOffsetMs = 0;
+  let isSynced = false;
+
+  async function syncTashkentTime() {
+    const syncDot = document.getElementById("syncDot");
+    const syncStatus = document.getElementById("syncStatus");
+
+    try {
+      // Запрос к мировому серверу точного времени
+      const res = await fetch("https://worldtimeapi.org/api/timezone/Asia/Tashkent", { cache: "no-store" });
+      if (!res.ok) throw new Error("HTTP error");
+      const data = await res.json();
+      
+      const serverMs = new Date(data.datetime).getTime();
+      const localMs = Date.now();
+      
+      // Разница между сервером и часами телефона
+      serverOffsetMs = serverMs - localMs;
+      isSynced = true;
+
+      const diffSec = Math.round(serverOffsetMs / 1000);
+      syncDot.classList.add("synced");
+      syncStatus.innerText = `Точное время Ташкента (смещение: ${diffSec >= 0 ? "+" : ""}${diffSec}с)`;
+    } catch (e) {
+      console.warn("Сетевой сервер времени недоступен, используем системное время:", e);
+      if (!isSynced) {
+        syncStatus.innerText = "Используются часы устройства (офлайн)";
+      }
+    }
+  }
+
+  // Получение актуального объекта Date с учетом Ташкента
+  function getActualNow() {
+    return new Date(Date.now() + serverOffsetMs);
+  }
+
+  function parseTimeToSec(tStr) {
+    const [h, m] = tStr.split(":").map(Number);
+    return h * 3600 + m * 60;
+  }
+
+  function formatSec(seconds) {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m} мин ${s < 10 ? '0' : ''}${s} сек`;
+  }
+
+  // Выбор текущего активного дня для списка
+  let nowInit = getActualNow();
+  let dayNum = nowInit.getDay();
+  let selectedDay = (dayNum >= 1 && dayNum <= 5) ? dayNum : 1;
+
+  const dayButtons = document.querySelectorAll(".day-btn");
+  dayButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      selectedDay = parseInt(btn.dataset.day);
+      renderList();
+    });
+  });
+
+  // 4. Главный цикл обновления виджета и часов
+  function updateApp() {
+    const now = getActualNow();
+    const curDay = now.getDay();
+    const curSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+
+    // Обновление даты и часов
+    document.getElementById("clock").innerText = now.toLocaleTimeString("ru-RU", { timeZone: "Asia/Tashkent" });
+    document.getElementById("dateStr").innerText = now.toLocaleDateString("ru-RU", {
+      timeZone: "Asia/Tashkent",
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    });
+
+    const badge = document.getElementById("statusBadge");
+    const title = document.getElementById("statusTitle");
+    const desc = document.getElementById("statusDesc");
+    const countdown = document.getElementById("statusCountdown");
+
+    // Выходные (Сб, Вс)
+    if (curDay === 0 || curDay === 6) {
+      badge.className = "status-badge off";
+      badge.innerText = "Выходной";
+      title.innerText = "Уроков сегодня нет";
+      desc.innerText = "Следующий учебный день — понедельник.";
+      countdown.innerText = "";
+      return;
+    }
+
+    const todayLessons = timetable[curDay] || [];
+    const dayBells = todayLessons.map(l => {
+      const bell = bellSchedule.find(b => b.num === l.num);
+      return {
+        ...l,
+        startSec: parseTimeToSec(bell.start),
+        endSec: parseTimeToSec(bell.end),
+        startStr: bell.start,
+        endStr: bell.end
+      };
+    });
+
+    const firstLesson = dayBells[0];
+    const lastLesson = dayBells[dayBells.length - 1];
+
+    if (curSec < firstLesson.startSec) {
+      // До начала первого урока
+      badge.className = "status-badge break";
+      badge.innerText = "Скоро звонок";
+      title.innerText = `1-й урок: ${firstLesson.name}`;
+      desc.innerText = `Кабинет: ${firstLesson.room} • Начало в ${firstLesson.startStr}`;
+      countdown.innerText = `До начала: ${formatSec(firstLesson.startSec - curSec)}`;
+    } else if (curSec >= lastLesson.endSec) {
+      // Все уроки окончены
+      badge.className = "status-badge off";
+      badge.innerText = "Завершено";
+      title.innerText = "Все уроки на сегодня закончены";
+      desc.innerText = "Хорошего отдыха!";
+      countdown.innerText = "";
+    } else {
+      // Учебное время в разгаре
+      let currentLesson = null;
+      let nextLesson = null;
+
+      for (let i = 0; i < dayBells.length; i++) {
+        const l = dayBells[i];
+        if (curSec >= l.startSec && curSec < l.endSec) {
+          currentLesson = l;
+          nextLesson = dayBells[i + 1] || null;
+          break;
+        }
+      }
+
+      if (currentLesson) {
+        // Идёт урок прямо сейчас
+        badge.className = "status-badge in-lesson";
+        badge.innerText = "Сейчас идёт урок";
+        title.innerText = `${currentLesson.num}. ${currentLesson.name}`;
+        let descText = `Кабинет: ${currentLesson.room}`;
+        if (nextLesson) {
+          descText += ` • Следующий: ${nextLesson.name} (${nextLesson.room})`;
+        }
+        desc.innerText = descText;
+        countdown.innerText = `До конца урока: ${formatSec(currentLesson.endSec - curSec)}`;
+      } else {
+        // Перемена между уроками
+        nextLesson = dayBells.find(l => curSec < l.startSec);
+        if (nextLesson) {
+          badge.className = "status-badge break";
+          badge.innerText = "Перемена";
+          title.innerText = `Следующий: ${nextLesson.name}`;
+          desc.innerText = `Кабинет: ${nextLesson.room} • Звонок в ${nextLesson.startStr}`;
+          countdown.innerText = `До конца перемены: ${formatSec(nextLesson.startSec - curSec)}`;
+        }
+      }
+    }
+  }
+
+  // 5. Отрисовка списка расписания
+  function renderList() {
+    dayButtons.forEach(btn => {
+      btn.classList.toggle("active", parseInt(btn.dataset.day) === selectedDay);
+    });
+
+    const listContainer = document.getElementById("lessonsContainer");
+    listContainer.innerHTML = "";
+
+    const lessons = timetable[selectedDay] || [];
+    const now = getActualNow();
+    const curDay = now.getDay();
+    const curSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+
+    lessons.forEach(l => {
+      const bell = bellSchedule.find(b => b.num === l.num);
+      const startSec = parseTimeToSec(bell.start);
+      const endSec = parseTimeToSec(bell.end);
+
+      const item = document.createElement("div");
+      item.className = "lesson-item";
+
+      // Подсветка активного урока только в текущий день
+      if (curDay === selectedDay && curSec >= startSec && curSec < endSec) {
+        item.classList.add("current");
+      }
+
+      item.innerHTML = `
+        <div class="lesson-left">
+          <div class="lesson-num">${l.num}</div>
+          <div>
+            <div class="lesson-name">${l.name}</div>
+            <div class="lesson-room">${l.room}</div>
+          </div>
+        </div>
+        <div class="lesson-time">
+          ${bell.start}<br>${bell.end}
+        </div>
+      `;
+      listContainer.appendChild(item);
+    });
+  }
+
+  // Старт и интервалы
+  syncTashkentTime();
+  setInterval(syncTashkentTime, 15 * 60 * 1000); // Повторная синхронизация каждые 15 минут
+
+  renderList();
+  updateApp();
+  setInterval(updateApp, 1000);
+</script>
+
+</body>
+</html>
