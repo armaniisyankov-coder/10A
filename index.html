@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -96,7 +97,6 @@
       background: var(--accent-green);
     }
 
-    /* Виджет активного статуса */
     .status-widget {
       background: linear-gradient(135deg, #1e293b 0%, #172554 100%);
       padding: 16px 18px;
@@ -141,7 +141,6 @@
       color: var(--accent);
     }
 
-    /* Навигация по дням недели */
     .days-nav {
       display: flex;
       gap: 6px;
@@ -177,7 +176,6 @@
       font-weight: 700;
     }
 
-    /* Список уроков */
     .lessons-list {
       display: flex;
       flex-direction: column;
@@ -257,11 +255,6 @@
       flex-shrink: 0;
     }
 
-    /* -------------------------------------------------------------
-       АДАПТАЦИЯ ПО ОРИЕНТАЦИИ И ДЛЯ УЛЬТРАКОМПАКТНЫХ УСТРОЙСТВ
-       ------------------------------------------------------------- */
-
-    /* Альбомная ориентация (горизонтальный экран смартфонов и планшетов) */
     @media (orientation: landscape) and (max-height: 500px) {
       body {
         padding: 8px calc(14px + env(safe-area-inset-right)) 8px calc(14px + env(safe-area-inset-left));
@@ -292,7 +285,6 @@
       .lesson-item { padding: 8px 10px; }
     }
 
-    /* Адаптация под Apple Watch и экраны шириной <= 240px */
     @media (max-width: 240px), (max-device-width: 240px) {
       body {
         padding: 4px;
@@ -388,7 +380,6 @@
 </div>
 
 <script>
-  // 1. Сетка звонков
   const bellSchedule = [
     { num: 1, start: "09:15", end: "09:55" },
     { num: 2, start: "10:10", end: "10:50" },
@@ -399,52 +390,50 @@
     { num: 7, start: "15:00", end: "15:40" }
   ];
 
-  // 2. Расписание 10 «А»
   const timetable = {
     1: [
-      { num: 1, name: "История (Ист)", room: "каб. 101" },
-      { num: 2, name: "ИВТ", room: "IT A" },
-      { num: 3, name: "ШУ", room: "Конференц-зал" },
-      { num: 4, name: "Английский яз.", room: "каб. 108" },
-      { num: 5, name: "Узбекский яз.", room: "Конференц-зал" },
-      { num: 6, name: "Алгебра", room: "каб. 404" }
+      { num: 1, name: "История", room: "к.101(кинозал)" },
+      { num: 2, name: "ШУ", room: "Конф.зал" },
+      { num: 3, name: "ИВТ", room: "IT A" },
+      { num: 4, name: "Проектная деят.", room: "—" },
+      { num: 5, name: "Русский яз. / Лит.", room: "к.104" },
+      { num: 6, name: "Алгебра", room: "к.404" }
     ],
     2: [
-      { num: 1, name: "Геометрия", room: "каб. 404" },
-      { num: 2, name: "Тригонометрия", room: "каб. 404" },
-      { num: 3, name: "Физика", room: "каб. 203" },
-      { num: 4, name: "Физика", room: "каб. 203" },
-      { num: 5, name: "НДП", room: "каб. 303" },
-      { num: 6, name: "Русский яз. / Лит.", room: "каб. 104" }
+      { num: 1, name: "Физика", room: "к.203" },
+      { num: 2, name: "Физика", room: "к.203" },
+      { num: 3, name: "Английский яз.", room: "к.108" },
+      { num: 4, name: "Узбекский яз.", room: "Конф.зал" },
+      { num: 5, name: "НДП", room: "к.303" },
+      { num: 6, name: "Геометрия", room: "к.404" }
     ],
     3: [
-      { num: 1, name: "Алгебра", room: "каб. 404" },
-      { num: 2, name: "ИВТ", room: "IT A" },
-      { num: 3, name: "Узбекский яз.", room: "Конференц-зал" },
-      { num: 4, name: "Русский яз. / Лит.", room: "каб. 104" },
-      { num: 5, name: "Английский яз.", room: "каб. 108" },
-      { num: 6, name: "Проектная деят.", room: "—" }
+      { num: 1, name: "Узбекский яз.", room: "Конф.зал" },
+      { num: 2, name: "Тригонометрия", room: "к.404" },
+      { num: 3, name: "ИВТ", room: "IT A" },
+      { num: 4, name: "ИВТ", room: "IT A" },
+      { num: 5, name: "Английский яз.", room: "к.108" },
+      { num: 6, name: "Русский яз. / Лит.", room: "к.104" }
     ],
     4: [
-      { num: 1, name: "Русский яз. / Лит.", room: "каб. 104" },
+      { num: 1, name: "Русский яз. / Лит.", room: "к.104" },
       { num: 2, name: "Физкультура", room: "Спортзал" },
-      { num: 3, name: "История", room: "каб. 101" },
-      { num: 4, name: "Проектная деят.", room: "—" },
-      { num: 5, name: "Ораторское иск.", room: "Театр. студия" },
-      { num: 6, name: "Геометрия", room: "каб. 404" },
-      { num: 7, name: "Английский яз.", room: "каб. 108" }
+      { num: 3, name: "Ораторское иск.", room: "Театр.студ." },
+      { num: 4, name: "Английский яз.", room: "к.108" },
+      { num: 5, name: "Алгебра", room: "к.404" },
+      { num: 6, name: "Проектная деят.", room: "—" },
+      { num: 7, name: "Геометрия", room: "к.404" }
     ],
     5: [
-      { num: 1, name: "Физика", room: "каб. 203" },
-      { num: 2, name: "Физика", room: "каб. 203" },
-      { num: 3, name: "Узбекский яз.", room: "Конференц-зал" },
-      { num: 4, name: "Английский яз.", room: "каб. 108" },
-      { num: 5, name: "Тригонометрия", room: "каб. 404" },
-      { num: 6, name: "ИВТ", room: "IT A" }
+      { num: 1, name: "Тригонометрия", room: "к.404" },
+      { num: 2, name: "Узбекский яз.", room: "Конф.зал" },
+      { num: 3, name: "Физика", room: "к.203" },
+      { num: 4, name: "Физика", room: "к.203" },
+      { num: 5, name: "История", room: "к.101(кинозал)" },
+      { num: 6, name: "Английский яз.", room: "к.108" }
     ]
   };
 
-  // 3. Синхронизация времени
   let serverOffsetMs = 0;
   let isSynced = false;
 
